@@ -1,60 +1,96 @@
-
 const gameBoard = (() => {
   const board = [...Array(9)];
   const boardContainer = document.querySelector(".board");
 
   const display = () => {
-    return board;
-  };
-
-  const initializeBoard = () => {
     board.forEach(function (elt, index) {
       const square = document.createElement("div");
       square.setAttribute("class", "square");
       square.setAttribute("id", `${index}`);
-      console.log(elt);
-      console.log(index);
-
+      square.addEventListener("click", onClick, false);
       boardContainer.appendChild(square);
     });
+
+    return board;
+  };
+
+  const onClick = (e) => {
+    game.checkXTurn()
+      ? updateCell(e.target.id, "X")
+      : updateCell(e.target.id, "O");
+    e.target.textContent = board[e.target.id];
+    console.log(board);
   };
 
   const updateCell = (idx, val) => {
     if (!board[idx]) {
       board[idx] = val;
+      console.log(`board[idx]: ${board[idx]}`);
+      if (checkIfWon()) {
+        game.checkXTurn()
+          ? console.log(game.displayOutcomes(0))
+          : console.log(game.displayOutcomes(1));
+      } else if (checkIfTie()) {
+        console.log(game.displayOutcomes(2));
+      } else {
+        game.changeTurns();
+      }
     } else {
       console.log("that space is already taken!");
     }
   };
 
   const clearBoard = () => {
+    document
+      .querySelectorAll(".square")
+      .forEach((e) => e.parentNode.removeChild(e));
+    display();
+  };
+
+  const resetBoard = () => {
     board.forEach(function (elt, index) {
       board[index] = undefined;
     });
   };
 
   const checkIfWon = () => {
-    if (board[0] || board[1] || board[2] || board[3] || board[6]) {
+    if (board[0]) {
       if (
         (board[0] === board[1] && board[1] === board[2]) ||
         (board[0] === board[4] && board[4] === board[8]) ||
-        (board[0] === board[3] && board[3] === board[6]) ||
-        (board[1] === board[4] && board[4] === board[7]) ||
-        (board[2] === board[5] && board[5] === board[8]) ||
-        (board[2] === board[4] && board[4] === board[6]) ||
-        (board[3] === board[4] && board[4] === board[5]) ||
-        (board[6] === board[7] && board[7] === board[8])
+        (board[0] === board[3] && board[3] === board[6])
       ) {
         return true;
       }
+    } else if (board[1]) {
+      if (board[1] === board[4] && board[4] === board[7]) {
+        return true;
+      }
+    } else if (board[2]) {
+      if (
+        (board[2] === board[5] && board[5] === board[8]) ||
+        (board[2] === board[4] && board[4] === board[6])
+      ) {
+        return true;
+      }
+    } else if (board[3]) {
+      if (board[3] === board[4] && board[4] === board[5]) {
+        return true;
+      }
+    } else if (board[6]) {
+      if (board[6] === board[7] && board[7] === board[8]) {
+        return true;
+      }
+    } else {
+      return false;
     }
   };
 
   const checkIfTie = () => {
     let bool;
-    if (isFull) {
+    if (isFull()) {
       console.log("first if in checkIfTie");
-      if (checkIfWon) {
+      if (checkIfWon()) {
         bool = false;
       } else {
         bool = true;
@@ -86,18 +122,27 @@ const gameBoard = (() => {
     display,
     updateCell,
     clearBoard,
+    resetBoard,
     checkType,
     checkIfWon,
     isEmpty,
     isFull,
     checkIfTie,
-    initializeBoard
   };
 })();
 
 const game = (() => {
-  const outcomes = ["X Wins!", "O Wins!", "It's a Tie!"];
+  /*
+    const startbtn = document.querySelector("#start");
 
+  startbtn.addEventListener("click", startGame, false)
+
+  const startGame = () => {
+    return gameBoard.display();
+  }
+  */
+
+  const outcomes = ["X Wins!", "O Wins!", "It's a Tie!"];
   let isXTurn = true;
 
   const displayOutcomes = (outcome) => {
@@ -105,7 +150,14 @@ const game = (() => {
   };
 
   const changeTurns = () => {
+    console.log(`isXTurn: ${isXTurn}`);
     isXTurn = !isXTurn;
+    console.log(`isXTurn: ${isXTurn}`);
+    return isXTurn;
+  };
+
+  const checkXTurn = () => {
+    console.log(`checkXTurn: ${isXTurn}`);
     return isXTurn;
   };
 
@@ -123,7 +175,7 @@ const game = (() => {
     }
   };
 
-  return { displayOutcomes, changeTurns, reportWin };
+  return { displayOutcomes, changeTurns, checkXTurn, reportWin, /*startGame*/ };
 })();
 
 const playerFactory = (role) => {
@@ -134,14 +186,10 @@ const playerFactory = (role) => {
 const playerX = playerFactory("X");
 const playerO = playerFactory("O");
 
-gameBoard.initializeBoard();
-
+console.log(gameBoard.display());
 
 /*
-playerX.sayRole();
-playerO.sayRole();
 
-console.log(gameBoard.display());
 console.log(`Is the array empty?\n${gameBoard.isEmpty()}`);
 console.log(`Is the array full?\n${gameBoard.isFull()}`);
 gameBoard.updateCell(1, "X");

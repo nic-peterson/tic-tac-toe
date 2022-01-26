@@ -1,6 +1,38 @@
+body {
+    background-color: lightsteelblue;
+}
 .app {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: 100;
+}
+
+.board {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  background-color: grey;
+  width: 480px;
+  height: 480px;
+}
+
+button {
+  padding: 8px;
+  margin-bottom: 16px;
+}
+
+.square {
+  box-sizing: border-box;
+  width: 160px;
+  height: 160px;
+  background-color: lightslategray;
+  border: solid 2px mintcream ;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: xx-large;
+  font-weight: bold;
 }
