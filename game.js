@@ -1,16 +1,6 @@
 const gameBoard = (() => {
   const board = [...Array(9)];
   const boardContainer = document.querySelector(".board");
-  const winConditions = [
-    [0, 1, 2],
-    [0, 4, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [2, 4, 6],
-    [3, 4, 5],
-    [6, 7, 8],
-  ];
 
   const display = () => {
     board.forEach(function (elt, index) {
@@ -36,7 +26,7 @@ const gameBoard = (() => {
     if (!board[idx]) {
       board[idx] = val;
       console.log(`board[idx]: ${board[idx]}`);
-      if (checkIfWon(val)) {
+      if (game.checkIfWon(val)) {
         game.checkXTurn()
           ? console.log(game.displayOutcomes(0))
           : console.log(game.displayOutcomes(1));
@@ -60,28 +50,6 @@ const gameBoard = (() => {
     board.forEach(function (elt, index) {
       board[index] = undefined;
     });
-  };
-
-  const checkIfWon = (val) => {
-    let bool = false;
-    winConditions.forEach(function(elt, index) {
-      if(board[elt[0]] === board[elt[1]] && board[elt[1]] === board[elt[2]] && board[elt[2]] === val) {
-        bool = true;
-      }
-    })
-    return bool;
-  };
-
-  const checkIfTie = () => {
-    let bool;
-    if (isFull()) {
-      if (checkIfWon('X') || checkIfWon('O')) {
-        bool = false;
-      } else {
-        bool = true;
-      }
-    }
-    return bool;
   };
 
   const isEmpty = () => {
@@ -109,10 +77,8 @@ const gameBoard = (() => {
     clearBoard,
     resetBoard,
     checkType,
-    checkIfWon,
     isEmpty,
     isFull,
-    checkIfTie,
   };
 })();
 
@@ -159,6 +125,32 @@ const game = (() => {
     }
   }
 
+  const checkIfWon = (val) => {
+    let bool = false;
+    winConditions.forEach(function (elt, index) {
+      if (
+        board[elt[0]] === board[elt[1]] &&
+        board[elt[1]] === board[elt[2]] &&
+        board[elt[2]] === val
+      ) {
+        bool = true;
+      }
+    });
+    return bool;
+  };
+
+  const checkIfTie = () => {
+    let bool;
+    if (isFull()) {
+      if (checkIfWon("X") || checkIfWon("O")) {
+        bool = false;
+      } else {
+        bool = true;
+      }
+    }
+    return bool;
+  };
+
   const toggleIsGameLive = () => {
     return (isGameLive = !isGameLive);
   };
@@ -191,7 +183,14 @@ const game = (() => {
     }
   };
 
-  return { displayOutcomes, changeTurns, checkXTurn, reportWin };
+  return {
+    displayOutcomes,
+    changeTurns,
+    checkXTurn,
+    reportWin,
+    checkIfTie,
+    checkIfWon,
+  };
 })();
 
 const playerFactory = (role) => {
