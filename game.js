@@ -1,6 +1,16 @@
 const gameBoard = (() => {
   const board = [...Array(9)];
   const boardContainer = document.querySelector(".board");
+  const winConditions = [
+    [0, 1, 2],
+    [0, 4, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [2, 4, 6],
+    [3, 4, 5],
+    [6, 7, 8],
+  ];
 
   const display = () => {
     board.forEach(function (elt, index) {
@@ -26,7 +36,7 @@ const gameBoard = (() => {
     if (!board[idx]) {
       board[idx] = val;
       console.log(`board[idx]: ${board[idx]}`);
-      if (checkIfWon()) {
+      if (checkIfWon(val)) {
         game.checkXTurn()
           ? console.log(game.displayOutcomes(0))
           : console.log(game.displayOutcomes(1));
@@ -52,43 +62,20 @@ const gameBoard = (() => {
     });
   };
 
-  const checkIfWon = () => {
-    if (board[0]) {
-      if (
-        (board[0] === board[1] && board[1] === board[2]) ||
-        (board[0] === board[4] && board[4] === board[8]) ||
-        (board[0] === board[3] && board[3] === board[6])
-      ) {
-        return true;
+  const checkIfWon = (val) => {
+    let bool = false;
+    winConditions.forEach(function(elt, index) {
+      if(board[elt[0]] === board[elt[1]] && board[elt[1]] === board[elt[2]] && board[elt[2]] === val) {
+        bool = true;
       }
-    } else if (board[1]) {
-      if (board[1] === board[4] && board[4] === board[7]) {
-        return true;
-      }
-    } else if (board[2]) {
-      if (
-        (board[2] === board[5] && board[5] === board[8]) ||
-        (board[2] === board[4] && board[4] === board[6])
-      ) {
-        return true;
-      }
-    } else if (board[3]) {
-      if (board[3] === board[4] && board[4] === board[5]) {
-        return true;
-      }
-    } else if (board[6]) {
-      if (board[6] === board[7] && board[7] === board[8]) {
-        return true;
-      }
-    } else {
-      return false;
-    }
+    })
+    return bool;
   };
 
   const checkIfTie = () => {
     let bool;
     if (isFull()) {
-      if (checkIfWon()) {
+      if (checkIfWon('X') || checkIfWon('O')) {
         bool = false;
       } else {
         bool = true;
