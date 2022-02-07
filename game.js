@@ -44,7 +44,6 @@ const gameBoard = (() => {
     document
       .querySelectorAll(".square")
       .forEach((e) => e.parentNode.removeChild(e));
-    display();
   };
 
   const resetBoard = () => {
@@ -89,7 +88,6 @@ const gameBoard = (() => {
   const checkIfTie = () => {
     let bool;
     if (isFull()) {
-      console.log("first if in checkIfTie");
       if (checkIfWon()) {
         bool = false;
       } else {
@@ -131,28 +129,59 @@ const gameBoard = (() => {
   };
 })();
 
+/* 
+Winning combinations:
+0 - 1 - 2
+0 - 4 - 8
+0 - 3 - 6
+1 - 4 - 7
+2 - 5 - 8
+2 - 4 - 6
+3 - 4 - 5
+6 - 7 - 8
+
+*/
+
 const game = (() => {
-  /*
-    const startbtn = document.querySelector("#start");
-
-  startbtn.addEventListener("click", startGame, false)
-
-  const startGame = () => {
-    return gameBoard.display();
-  }
-  */
-
+  const startbtn = document.querySelector("#start");
   const outcomes = ["X Wins!", "O Wins!", "It's a Tie!"];
+  const winConditions = [
+    [0, 1, 2],
+    [0, 4, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [2, 4, 6],
+    [3, 4, 5],
+    [6, 7, 8],
+  ];
   let isXTurn = true;
+  let isGameLive = false;
+
+  const gameStart = () => {
+    if (!isGameLive) {
+      console.log("click");
+      gameBoard.display();
+      toggleIsGameLive();
+    } else {
+      gameBoard.resetBoard();
+      gameBoard.clearBoard();
+      gameBoard.display();
+    }
+  };
+
+  startbtn.addEventListener("click", gameStart, false);
+
+  const toggleIsGameLive = () => {
+    return (isGameLive = !isGameLive);
+  };
 
   const displayOutcomes = (outcome) => {
     return outcomes[outcome];
   };
 
   const changeTurns = () => {
-    console.log(`isXTurn: ${isXTurn}`);
     isXTurn = !isXTurn;
-    console.log(`isXTurn: ${isXTurn}`);
     return isXTurn;
   };
 
@@ -175,7 +204,7 @@ const game = (() => {
     }
   };
 
-  return { displayOutcomes, changeTurns, checkXTurn, reportWin, /*startGame*/ };
+  return { displayOutcomes, changeTurns, checkXTurn, reportWin };
 })();
 
 const playerFactory = (role) => {
@@ -186,7 +215,7 @@ const playerFactory = (role) => {
 const playerX = playerFactory("X");
 const playerO = playerFactory("O");
 
-console.log(gameBoard.display());
+//console.log(gameBoard.display());
 
 /*
 
