@@ -144,6 +144,7 @@ Winning combinations:
 
 const game = (() => {
   const startbtn = document.querySelector("#start");
+
   const outcomes = ["X Wins!", "O Wins!", "It's a Tie!"];
   const winConditions = [
     [0, 1, 2],
@@ -157,8 +158,9 @@ const game = (() => {
   ];
   let isXTurn = true;
   let isGameLive = false;
+  startbtn.addEventListener("click", gameStart, false);
 
-  const gameStart = () => {
+  function gameStart() {
     if (!isGameLive) {
       console.log("click");
       gameBoard.display();
@@ -168,9 +170,7 @@ const game = (() => {
       gameBoard.clearBoard();
       gameBoard.display();
     }
-  };
-
-  startbtn.addEventListener("click", gameStart, false);
+  }
 
   const toggleIsGameLive = () => {
     return (isGameLive = !isGameLive);
