@@ -1,6 +1,16 @@
 const gameBoard = (() => {
   const board = [...Array(9)];
   const boardContainer = document.querySelector(".board");
+  const winConditions = [
+    [0, 1, 2],
+    [0, 4, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [2, 4, 6],
+    [3, 4, 5],
+    [6, 7, 8],
+  ];
 
   const display = () => {
     board.forEach(function (elt, index) {
@@ -10,7 +20,6 @@ const gameBoard = (() => {
       square.addEventListener("click", onClick, false);
       boardContainer.appendChild(square);
     });
-
     return board;
   };
 
@@ -26,12 +35,11 @@ const gameBoard = (() => {
     if (!board[idx]) {
       board[idx] = val;
       console.log(`board[idx]: ${board[idx]}`);
-      if (game.checkIfWon(val)) {
-        game.checkXTurn()
-          ? console.log(game.displayOutcomes(0))
-          : console.log(game.displayOutcomes(1));
+      if (checkIfWon(val)) {
+        game.checkXTurn();
+        console.log(game.reportWin(true, false));
       } else if (checkIfTie()) {
-        console.log(game.displayOutcomes(2));
+        console.log(game.reportWin(false, true));
       } else {
         game.changeTurns();
       }
@@ -51,79 +59,6 @@ const gameBoard = (() => {
       board[index] = undefined;
     });
   };
-
-  const isEmpty = () => {
-    return Array.isArray(board) && board.length ? true : false;
-  };
-
-  const isFull = () => {
-    let bool = true;
-    board.forEach(function (elt) {
-      if (elt === undefined) {
-        bool = false;
-      }
-    });
-
-    return bool;
-  };
-
-  const checkType = () => {
-    board.forEach((elt) => console.log(`type ${typeof elt}`));
-  };
-
-  return {
-    display,
-    updateCell,
-    clearBoard,
-    resetBoard,
-    checkType,
-    isEmpty,
-    isFull,
-  };
-})();
-
-/* 
-Winning combinations:
-0 - 1 - 2
-0 - 4 - 8
-0 - 3 - 6
-1 - 4 - 7
-2 - 5 - 8
-2 - 4 - 6
-3 - 4 - 5
-6 - 7 - 8
-
-*/
-
-const game = (() => {
-  const startbtn = document.querySelector("#start");
-
-  const outcomes = ["X Wins!", "O Wins!", "It's a Tie!"];
-  const winConditions = [
-    [0, 1, 2],
-    [0, 4, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [2, 4, 6],
-    [3, 4, 5],
-    [6, 7, 8],
-  ];
-  let isXTurn = true;
-  let isGameLive = false;
-  startbtn.addEventListener("click", gameStart, false);
-
-  function gameStart() {
-    if (!isGameLive) {
-      console.log("click");
-      gameBoard.display();
-      toggleIsGameLive();
-    } else {
-      gameBoard.resetBoard();
-      gameBoard.clearBoard();
-      gameBoard.display();
-    }
-  }
 
   const checkIfWon = (val) => {
     let bool = false;
@@ -151,6 +86,97 @@ const game = (() => {
     return bool;
   };
 
+  const isEmpty = () => {
+    return Array.isArray(board) && board.length ? true : false;
+  };
+
+  const isFull = () => {
+    let bool = true;
+    board.forEach(function (elt) {
+      if (elt === undefined) {
+        bool = false;
+      }
+    });
+
+    return bool;
+  };
+
+  const checkType = () => {
+    board.forEach((elt) => console.log(`type ${typeof elt}`));
+  };
+
+  return {
+    display,
+    updateCell,
+    clearBoard,
+    resetBoard,
+    checkType,
+    checkIfWon,
+    isEmpty,
+    isFull,
+    checkIfTie,
+  };
+})();
+
+const game = (() => {
+  let isXTurn = true;
+  let isGameLive = false;
+  const outcomes = [
+    "X Wins!",
+    "O Wins!",
+    "It's a Tie!",
+    "That space is already taken!",
+  ];
+
+  const startbtn = document.querySelector("#start");
+  startbtn.addEventListener("click", gameStart, false);
+  const modalbtn = document.getElementById("myBtn");
+  modalbtn.addEventListener("click", openModal, false);
+  const span = document.getElementsByClassName("close")[0];
+  span.addEventListener("click", closeModal, false);
+  const modal = document.getElementById("myModal");
+
+  function gameStart() {
+    if (!isGameLive) {
+      console.log("click");
+      gameBoard.display();
+      toggleIsGameLive();
+    } else {
+      gameBoard.resetBoard();
+      gameBoard.clearBoard();
+      gameBoard.display();
+      resetIsXTurn();
+    }
+  }
+
+  // create a function that manages what happens when the game is won --
+  // suspends the game from being played.
+  // calls the modal to alert the player
+
+  // Function that takes in a string and populates a modal
+  // #TODO → investigate optional parameter for passing in the string
+  function openModal(string) {
+    modal.style.display = "flex";
+  }
+
+  function closeModal() {
+    modal.style.display = "none";
+  }
+
+  window.onclick = function (event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  };
+
+  // Need to lock the gameboard when a game is won
+  function disable() {}
+  // Then create a function in board that ^^ this function will call
+
+  // Create a way for users to input their names
+
+  // Function to report the winner
+
   const toggleIsGameLive = () => {
     return (isGameLive = !isGameLive);
   };
@@ -169,6 +195,10 @@ const game = (() => {
     return isXTurn;
   };
 
+  function resetIsXTurn() {
+    isXTurn = true;
+  }
+
   const reportWin = (winFlag, tieFlag) => {
     if (winFlag === true) {
       if (isXTurn) {
@@ -183,14 +213,7 @@ const game = (() => {
     }
   };
 
-  return {
-    displayOutcomes,
-    changeTurns,
-    checkXTurn,
-    reportWin,
-    checkIfTie,
-    checkIfWon,
-  };
+  return { displayOutcomes, changeTurns, checkXTurn, reportWin };
 })();
 
 const playerFactory = (role) => {
