@@ -37,14 +37,14 @@ const gameBoard = (() => {
       console.log(`board[idx]: ${board[idx]}`);
       if (checkIfWon(val)) {
         game.checkXTurn();
-        console.log(game.reportWin(true, false));
+        game.reportWin(true, false);
       } else if (checkIfTie()) {
-        console.log(game.reportWin(false, true));
+        game.reportWin(false, true);
       } else {
         game.changeTurns();
       }
     } else {
-      console.log("that space is already taken!");
+      game.openModal(game.displayOutcomes(3));
     }
   };
 
@@ -127,14 +127,15 @@ const game = (() => {
     "It's a Tie!",
     "That space is already taken!",
   ];
-
+  const modal = document.getElementById("myModal");
+  const modalContent = document.getElementById("modal-content");
   const startbtn = document.querySelector("#start");
   startbtn.addEventListener("click", gameStart, false);
   const modalbtn = document.getElementById("myBtn");
   modalbtn.addEventListener("click", openModal, false);
+
   const span = document.getElementsByClassName("close")[0];
   span.addEventListener("click", closeModal, false);
-  const modal = document.getElementById("myModal");
 
   function gameStart() {
     if (!isGameLive) {
@@ -157,15 +158,26 @@ const game = (() => {
   // #TODO → investigate optional parameter for passing in the string
   function openModal(string) {
     modal.style.display = "flex";
+    if (string) {
+      const msg = document.createElement("p");
+      msg.setAttribute("class", "msg");
+      msg.setAttribute("id", "msg");
+      msg.textContent = string;
+      modalContent.appendChild(msg);
+    }
   }
 
   function closeModal() {
+    let node = document.getElementById("msg");
+    if (node.parentNode) {
+      node.parentNode.removeChild(node);
+    }
     modal.style.display = "none";
   }
 
   window.onclick = function (event) {
     if (event.target == modal) {
-      modal.style.display = "none";
+      closeModal();
     }
   };
 
@@ -202,18 +214,18 @@ const game = (() => {
   const reportWin = (winFlag, tieFlag) => {
     if (winFlag === true) {
       if (isXTurn) {
-        return displayOutcomes(0);
+        openModal(displayOutcomes(0));
       } else {
-        return displayOutcomes(1);
+        openModal(displayOutcomes(1));
       }
     } else if (tieFlag === true) {
-      return displayOutcomes(2);
+      openModal(displayOutcomes(2));
     } else {
       return;
     }
   };
 
-  return { displayOutcomes, changeTurns, checkXTurn, reportWin };
+  return { displayOutcomes, changeTurns, checkXTurn, reportWin, openModal };
 })();
 
 const playerFactory = (role) => {
