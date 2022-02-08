@@ -121,18 +121,18 @@ const gameBoard = (() => {
 const game = (() => {
   let isXTurn = true;
   let isGameLive = false;
+  let isGameOver = false;
   const outcomes = [
     "X Wins!",
     "O Wins!",
     "It's a Tie!",
     "That space is already taken!",
   ];
+
   const modal = document.getElementById("myModal");
   const modalContent = document.getElementById("modal-content");
   const startbtn = document.querySelector("#start");
   startbtn.addEventListener("click", gameStart, false);
-  const modalbtn = document.getElementById("myBtn");
-  modalbtn.addEventListener("click", openModal, false);
 
   const span = document.getElementsByClassName("close")[0];
   span.addEventListener("click", closeModal, false);
@@ -147,15 +147,10 @@ const game = (() => {
       gameBoard.clearBoard();
       gameBoard.display();
       resetIsXTurn();
+      changeIsGameOver();
     }
   }
 
-  // create a function that manages what happens when the game is won --
-  // suspends the game from being played.
-  // calls the modal to alert the player
-
-  // Function that takes in a string and populates a modal
-  // #TODO → investigate optional parameter for passing in the string
   function openModal(string) {
     modal.style.display = "flex";
     if (string) {
@@ -173,6 +168,9 @@ const game = (() => {
       node.parentNode.removeChild(node);
     }
     modal.style.display = "none";
+    if(isGameOver) {
+      gameStart();
+    }
   }
 
   window.onclick = function (event) {
@@ -181,13 +179,8 @@ const game = (() => {
     }
   };
 
-  // Need to lock the gameboard when a game is won
-  function disable() {}
-  // Then create a function in board that ^^ this function will call
 
   // Create a way for users to input their names
-
-  // Function to report the winner
 
   const toggleIsGameLive = () => {
     return (isGameLive = !isGameLive);
@@ -211,15 +204,23 @@ const game = (() => {
     isXTurn = true;
   }
 
+  function changeIsGameOver() {
+    isGameOver = !isGameOver;
+    return isGameOver;
+  }
+
   const reportWin = (winFlag, tieFlag) => {
     if (winFlag === true) {
       if (isXTurn) {
         openModal(displayOutcomes(0));
+        changeIsGameOver();
       } else {
         openModal(displayOutcomes(1));
+        changeIsGameOver();
       }
     } else if (tieFlag === true) {
       openModal(displayOutcomes(2));
+      changeIsGameOver();
     } else {
       return;
     }
@@ -236,86 +237,3 @@ const playerFactory = (role) => {
 const playerX = playerFactory("X");
 const playerO = playerFactory("O");
 
-//console.log(gameBoard.display());
-
-/*
-
-console.log(`Is the array empty?\n${gameBoard.isEmpty()}`);
-console.log(`Is the array full?\n${gameBoard.isFull()}`);
-gameBoard.updateCell(1, "X");
-
-console.log(gameBoard.display());
-gameBoard.updateCell(1, "O");
-console.log(gameBoard.display());
-gameBoard.clearBoard();
-console.log("CLEAR");
-console.log(gameBoard.display());
-gameBoard.updateCell(0, "X");
-
-gameBoard.updateCell(4, "X");
-
-gameBoard.updateCell(8, "X");
-console.log(gameBoard.display());
-gameBoard.checkIfWon();
-gameBoard.clearBoard();
-console.log(gameBoard.display());
-gameBoard.updateCell(0, "X");
-
-gameBoard.updateCell(1, "X");
-
-gameBoard.updateCell(2, "X");
-console.log(gameBoard.display());
-gameBoard.checkIfWon();
-gameBoard.clearBoard();
-console.log(gameBoard.display());
-gameBoard.updateCell(6, "O");
-
-gameBoard.updateCell(7, "O");
-
-gameBoard.updateCell(8, "O");
-console.log(gameBoard.display());
-console.log(gameBoard.checkIfWon());
-console.log(game.reportWin(gameBoard.checkIfWon(), gameBoard.checkIfTie()));
-console.log(`Is the array full?\n${gameBoard.isFull()}`);
-gameBoard.clearBoard();
-for (let i = 0; i < 9; i++) {
-  if (i % 2 === 0) {
-    gameBoard.updateCell(i, "X");
-  } else {
-    gameBoard.updateCell(i, "O");
-  }
-}
-console.log(gameBoard.display());
-console.log(`Is the array full?\n${gameBoard.isFull()}`);
-console.log(gameBoard.checkIfWon());
-console.log(game.reportWin(gameBoard.checkIfWon(), gameBoard.checkIfTie()));
-console.log(game.reportWin(gameBoard.checkIfWon()));
-
-
-gameBoard.checkType();
-console.log(game.displayOutcomes(0));
-console.log(game.displayOutcomes(1));
-console.log(game.displayOutcomes(2));
-
-console.log(game.changeTurns());
-console.log(game.changeTurns());
-console.log(game.changeTurns());
-*/
-
-/*
-Board
-0 1 2
-3 4 5
-6 7 8
-
-Winning combinations:
-0 - 1 - 2
-0 - 4 - 8
-0 - 3 - 6
-1 - 4 - 7
-2 - 5 - 8
-2 - 4 - 6
-3 - 4 - 5
-6 - 7 - 8
-
-*/
